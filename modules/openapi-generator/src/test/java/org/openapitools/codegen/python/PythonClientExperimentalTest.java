@@ -48,13 +48,13 @@ public class PythonClientExperimentalTest {
         final CodegenModel simpleName = codegen.fromModel("v1beta3.Binding", openAPI.getComponents().getSchemas().get("v1beta3.Binding"));
         Assert.assertEquals(simpleName.name, "v1beta3.Binding");
         Assert.assertEquals(simpleName.classname, "V1beta3Binding");
-        Assert.assertEquals(simpleName.classVarName, "v1beta3_binding");
+        Assert.assertEquals(simpleName.classVarName, "v_1beta_3_binding");
 
         codegen.setOpenAPI(openAPI);
         final CodegenModel compoundName = codegen.fromModel("v1beta3.ComponentStatus", openAPI.getComponents().getSchemas().get("v1beta3.ComponentStatus"));
         Assert.assertEquals(compoundName.name, "v1beta3.ComponentStatus");
         Assert.assertEquals(compoundName.classname, "V1beta3ComponentStatus");
-        Assert.assertEquals(compoundName.classVarName, "v1beta3_component_status");
+        Assert.assertEquals(compoundName.classVarName, "v_1beta_3_component_status");
 
         final String path = "/api/v1beta3/namespaces/{namespaces}/bindings";
         final Operation operation = openAPI.getPaths().get(path).getPost();

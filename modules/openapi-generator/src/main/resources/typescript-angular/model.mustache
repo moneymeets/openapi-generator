@@ -2,9 +2,14 @@
 {{#models}}
 {{#model}}
 {{#tsImports}}
-import { {{classname}} } from '{{filename}}';
+// prettier-ignore
+// @ts-ignore
+import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, getValidationErrors{{classname}} } from '{{filename}}';
 {{/tsImports}}
-
+// prettier-ignore
+// @ts-ignore
+import { getValidationErrorsArray, getValidationErrorsboolean, getValidationErrorsnumber, getValidationErrorsstring } from '../../primitive-types-checks';
+import { FieldValidationError } from '../../validation-errors';
 
 {{#description}}
 /**

@@ -41,14 +41,14 @@ public class AbstractKotlinCodegenTest {
         codegen.setEnumPropertyNaming(UPPERCASE.name());
         assertEquals(codegen.toEnumVarName("long Name", null), "LONG_NAME");
         assertEquals(codegen.toEnumVarName("1long Name", null), "_1LONG_NAME");
-        assertEquals(codegen.toEnumVarName("not1long Name", null), "NOT1LONG_NAME");
+        assertEquals(codegen.toEnumVarName("not1long Name", null), "NOT_1LONG_NAME");
     }
     @Test
     public void snake_caseEnumConverter() {
         codegen.setEnumPropertyNaming(snake_case.name());
         assertEquals(codegen.toEnumVarName("long Name", null), "long_name");
         assertEquals(codegen.toEnumVarName("1long Name", null), "_1long_name");
-        assertEquals(codegen.toEnumVarName("not1long Name", null), "not1long_name");
+        assertEquals(codegen.toEnumVarName("not1long Name", null), "not_1long_name");
     }
 
     @Test

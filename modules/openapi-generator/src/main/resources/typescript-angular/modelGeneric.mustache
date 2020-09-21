@@ -1,3 +1,4 @@
+{{^vars}}/* tslint:disable:no-empty-interface */{{/vars}}
 export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.}}}{{^-last}}, {{/-last}}{{/allParents}} { {{>modelGenericAdditionalProperties}}
 {{#vars}}
     {{#description}}
@@ -5,6 +6,83 @@ export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.
      * {{{description}}}
      */
     {{/description}}
-    {{#isReadOnly}}readonly {{/isReadOnly}}{{{name}}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
+    {{#isReadOnly}}readonly {{/isReadOnly}}{{{name}}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}} | null{{/required}};
 {{/vars}}
 }{{>modelGenericEnums}}
+
+export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}): {{classname}} {
+    return {
+        {{#allParents}}...removeAdditionalPropertiesFrom{{.}}(obj){{^-last}},
+        {{/-last}}{{#-last}}{{#vars}},
+        {{/vars}}{{/-last}}{{/allParents}}
+    {{#vars}}
+        {{name}}: {{#isListContainer}}obj.{{name}}{{^required}}?{{/required}}.map(item => {{#items.isPrimitiveType}}item{{/items.isPrimitiveType}}{{^items.isPrimitiveType}}removeAdditionalPropertiesFrom{{{items.dataType}}}(item){{/items.isPrimitiveType}}){{/isListContainer}}{{^isListContainer}}{{#isPrimitiveType}}obj.{{name}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{^required}}obj.{{name}} ? {{/required}}removeAdditionalPropertiesFrom{{{dataType}}}(obj.{{name}}){{^required}} : undefined{{/required}}{{/isPrimitiveType}}{{/isListContainer}}{{#hasMore}},{{/hasMore}}
+    {{/vars}}
+    };
+}
+
+export function removeAdditionalPropertiesFromPartial{{classname}}(obj: Partial<{{classname}}>) {
+    const ret: Partial<{{classname}}> = {
+        {{#allParents}}...removeAdditionalPropertiesFromPartial{{.}}(obj){{^-last}},{{/-last}}
+        {{/allParents}}
+    };
+
+    {{#vars}}
+    if (obj.hasOwnProperty('{{name}}'){{#required}}{{#isListContainer}} && obj.{{name}}{{/isListContainer}}{{^isListContainer}}{{^isPrimitiveType}} && obj.{{name}}{{/isPrimitiveType}}{{/isListContainer}}{{/required}}) {
+        ret.{{name}} = {{#isListContainer}}obj.{{name}}{{^required}}?{{/required}}.map(item => {{#items.isPrimitiveType}}item{{/items.isPrimitiveType}}{{^items.isPrimitiveType}}removeAdditionalPropertiesFrom{{{items.dataType}}}(item){{/items.isPrimitiveType}}){{/isListContainer}}{{^isListContainer}}{{#isPrimitiveType}}obj.{{name}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{^required}}obj.{{name}} ? {{/required}}removeAdditionalPropertiesFrom{{{dataType}}}(obj.{{name}}){{^required}} : undefined{{/required}}{{/isPrimitiveType}}{{/isListContainer}};
+    }
+    {{/vars}}
+
+    return ret;
+}
+
+export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classname}} {
+    return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
+}
+
+export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
+    const errors: FieldValidationError[] = {{^allParents}}[];{{/allParents}}{{#allParents}}[
+        ...getValidationErrors{{.}}(obj, isRequired, isPartial){{^-last}},{{/-last}}
+    ];{{/allParents}}
+
+    if (obj === null || obj === undefined) {
+        if (isRequired) {
+            errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
+        }
+        return errors;
+    }
+    {{#vars}}
+    {{#isListContainer}}
+    if ((!isPartial || obj.hasOwnProperty('{{name}}')) && getValidationErrors{{{dataType}}}(obj.{{name}}, {{required}}).length > 0) {
+        errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}} });
+    }
+    else if (obj.{{name}}) {
+        obj.{{name}}.forEach((item: any, index: number) => {
+            const fieldErrors = getValidationErrors{{{items.dataType}}}(item, true{{^items.isPrimitiveType}}{{^items.isContainer}}, false{{/items.isContainer}}{{/items.isPrimitiveType}});
+            if (fieldErrors.length > 0) {
+                errors.push({
+                    fieldName: `obj.{{name}}[${index}]`,
+                    expectedType: '{{items.dataType}}',
+                    actualValue: item,
+                    errors: fieldErrors
+                });
+            }
+        });
+    }
+    {{/isListContainer}}
+    {{^isListContainer}}
+    {{#isPrimitiveType}}
+    if ((!isPartial || obj.hasOwnProperty('{{name}}')) && getValidationErrors{{{dataType}}}(obj.{{name}}, {{required}}).length > 0) {
+        errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}} });
+    }
+    {{/isPrimitiveType}}
+    {{^isPrimitiveType}}
+    const {{{name}}}ValidationErrors = (!isPartial || obj.hasOwnProperty('{{name}}')) ? getValidationErrors{{{dataType}}}(obj.{{name}}, {{required}}, false) : [];
+    if ({{{name}}}ValidationErrors.length > 0) {
+        errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}}, errors: {{{name}}}ValidationErrors });
+    }
+    {{/isPrimitiveType}}
+    {{/isListContainer}}
+    {{/vars}}
+    return errors;
+}

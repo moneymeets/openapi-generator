@@ -3839,6 +3839,7 @@ public class DefaultCodegen implements CodegenConfig {
         op.isRestfulIndex = op.isRestfulIndex();
         op.isRestfulCreate = op.isRestfulCreate();
         op.isRestfulUpdate = op.isRestfulUpdate();
+        op.isRestfulPartialUpdate = op.isRestfulPartialUpdate();
         op.isRestfulDestroy = op.isRestfulDestroy();
         op.isRestful = op.isRestful();
 

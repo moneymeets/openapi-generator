@@ -304,7 +304,7 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         if (this.reservedWordsMappings().containsKey(name)) {
             return this.reservedWordsMappings().get(name);
         }
-        return "_" + name;
+        return name;
     }
 
     @Override

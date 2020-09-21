@@ -45,8 +45,8 @@ public class SharedTypeScriptTest {
         File apiFile = files.stream().filter(file->file.getName().contains(apiFileName)).findFirst().get();
         String apiFileContent = FileUtils.readFileToString(apiFile);
         Assert.assertTrue(!apiFileContent.contains("import { OrganizationWrapper | PersonWrapper }"));
-        Assert.assertEquals(StringUtils.countMatches(apiFileContent,"import { PersonWrapper }"),1);
-        Assert.assertEquals(StringUtils.countMatches(apiFileContent,"import { OrganizationWrapper }"),1);
+        Assert.assertEquals(StringUtils.countMatches(apiFileContent,"import { PersonWrapper"),1);
+        Assert.assertEquals(StringUtils.countMatches(apiFileContent,"import { OrganizationWrapper"),1);
     }
 
     @Test
@@ -64,8 +64,8 @@ public class SharedTypeScriptTest {
         final List<File> files = getGenerator(config).generate();
         File pets = files.stream().filter(file->file.getName().contains("pet.ts")).findFirst().get();
         String apiFileContent = FileUtils.readFileToString(pets);
-        Assert.assertTrue(apiFileContent.contains("import { Category }"));
-        Assert.assertTrue(apiFileContent.contains("import { Tag }"));
+        Assert.assertTrue(apiFileContent.contains("import { Category, removeAdditionalPropertiesFromCategory, removeAdditionalPropertiesFromPartialCategory, getValidationErrorsCategory }"));
+        Assert.assertTrue(apiFileContent.contains("import { Tag, removeAdditionalPropertiesFromTag, removeAdditionalPropertiesFromPartialTag, getValidationErrorsTag }"));
 
         FileUtils.deleteDirectory(new File("src/test/resources/oldImportsStillPresentTest/"));
     }

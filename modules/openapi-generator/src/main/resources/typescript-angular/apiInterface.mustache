@@ -17,7 +17,7 @@ import { Configuration }                                     from '../configurat
 {{#allParams.0}}
 export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams {
 {{#allParams}}
-    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#isNullable}} | null{{/isNullable}};
+    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^required}} | null{{/required}};
 {{/allParams}}
 }
 

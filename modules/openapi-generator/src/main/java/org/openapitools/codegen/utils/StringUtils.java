@@ -61,6 +61,7 @@ public class StringUtils {
             String result;
             String firstPattern = "([A-Z]+)([A-Z][a-z])";
             String secondPattern = "([a-z\\d])([A-Z])";
+            String thirdPattern = "([A-Za-z])(\\d)";
             String replacementPattern = "$1_$2";
             // Replace package separator with slash.
             result = wordToUnderscore.replaceAll("\\.", "/");
@@ -69,6 +70,7 @@ public class StringUtils {
             // Replace capital letter with _ plus lowercase letter.
             result = result.replaceAll(firstPattern, replacementPattern);
             result = result.replaceAll(secondPattern, replacementPattern);
+            result = result.replaceAll(thirdPattern, replacementPattern);
             result = result.replace('-', '_');
             // replace space with underscore
             result = result.replace(' ', '_');

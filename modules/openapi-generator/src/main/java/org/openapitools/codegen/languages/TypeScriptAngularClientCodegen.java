@@ -145,8 +145,6 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
         supportingFiles.add(new SupportingFile("variables.mustache", getIndexDirectory(), "variables.ts"));
         supportingFiles.add(new SupportingFile("encoder.mustache", getIndexDirectory(), "encoder.ts"));
         supportingFiles.add(new SupportingFile("gitignore", "", ".gitignore"));
-        supportingFiles.add(new SupportingFile("git_push.sh.mustache", "", "git_push.sh"));
-        supportingFiles.add(new SupportingFile("README.mustache", getIndexDirectory(), "README.md"));
 
         // determine NG version
         SemVer ngVersion;
@@ -273,8 +271,6 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
             additionalProperties.put("rxjsVersion", "6.1.0");
         }
 
-        supportingFiles.add(new SupportingFile("ng-package.mustache", getIndexDirectory(), "ng-package.json"));
-
         // Specific ng-packagr configuration
         if (ngVersion.atLeast("10.0.0")) {
             additionalProperties.put("ngPackagrVersion", "10.0.3");
@@ -305,10 +301,6 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
             // compatible versions to Angular 6+
             additionalProperties.put("zonejsVersion", "0.8.26");
         }
-
-        //Files for building our lib
-        supportingFiles.add(new SupportingFile("package.mustache", getIndexDirectory(), "package.json"));
-        supportingFiles.add(new SupportingFile("tsconfig.mustache", getIndexDirectory(), "tsconfig.json"));
     }
 
     private String getIndexDirectory() {
@@ -477,6 +469,13 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
                         cm.imports.remove(cm.parent);
                     }
                 }
+                // Remove imports for interfaces in allOf, since TypeScript code generates properties directly into the interface without deriving from allOf-Interfaces.
+                if (cm.allOf.size() > 0) {
+                    cm.imports = cm.imports.stream().filter(currentImport -> !cm.allOf.contains(currentImport) || (cm.allParents != null && cm.allParents.contains(currentImport))).collect(Collectors.toSet());
+                }
+                if (cm.oneOf.size() > 0) {
+                    cm.imports = cm.imports.stream().filter(currentImport -> cm.oneOf.contains(currentImport) || (cm.allParents != null && cm.allParents.contains(currentImport))).collect(Collectors.toSet());
+                }
                 // Add additional filename information for imports
                 Set<String> parsedImports = parseImports(cm);
                 mo.put("tsImports", toTsImports(cm, parsedImports));
@@ -548,7 +547,7 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
         if (importMapping.containsKey(name)) {
             return importMapping.get(name);
         }
-        return DEFAULT_IMPORT_PREFIX + this.convertUsingFileNamingConvention(this.sanitizeName(name)) + modelFileSuffix;
+        return DEFAULT_IMPORT_PREFIX + this.convertUsingFileNamingConvention(this.sanitizeName(name.replace(':', '_'))) + modelFileSuffix;
     }
 
     @Override
@@ -582,7 +581,7 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
 
     @Override
     public String toModelName(String name) {
-        name = addSuffix(name, modelSuffix);
+        name = addSuffix(name.replace(':', '_'), modelSuffix);
         return super.toModelName(name);
     }
 

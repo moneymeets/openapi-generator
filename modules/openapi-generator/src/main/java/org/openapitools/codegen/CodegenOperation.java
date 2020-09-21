@@ -28,7 +28,7 @@ public class CodegenOperation {
             returnTypeIsPrimitive, returnSimpleType, subresourceOperation, isMapContainer,
             isListContainer, isMultipart, hasMore = true,
             isResponseBinary = false, isResponseFile = false, hasReference = false,
-            isRestfulIndex, isRestfulShow, isRestfulCreate, isRestfulUpdate, isRestfulDestroy,
+            isRestfulIndex, isRestfulShow, isRestfulCreate, isRestfulUpdate, isRestfulPartialUpdate, isRestfulDestroy,
             isRestful, isDeprecated, isCallbackRequest, uniqueItems;
     public String path, operationId, returnType, returnFormat, httpMethod, returnBaseType,
             returnContainer, summary, unescapedNotes, notes, baseName, defaultResponse; 
@@ -193,6 +193,15 @@ public class CodegenOperation {
      */
     public boolean isRestfulUpdate() {
         return Arrays.asList("PUT", "PATCH").contains(httpMethod.toUpperCase(Locale.ROOT)) && isMemberPath();
+    }
+
+    /**
+     * Check if act as Restful update method
+     *
+     * @return true if act as Restful update method, false otherwise
+     */
+    public boolean isRestfulPartialUpdate() {
+        return "PATCH".equalsIgnoreCase(httpMethod);
     }
 
     /**

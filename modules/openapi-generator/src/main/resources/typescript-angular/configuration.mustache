@@ -44,10 +44,10 @@ export class Configuration {
     credentials: {[ key: string ]: string | (() => string | undefined)};
 
     constructor(configurationParameters: ConfigurationParameters = {}) {
-        this.apiKeys = configurationParameters.apiKeys;
+        // this.apiKeys = configurationParameters.apiKeys;
         this.username = configurationParameters.username;
         this.password = configurationParameters.password;
-        this.accessToken = configurationParameters.accessToken;
+        // this.accessToken = configurationParameters.accessToken;
         this.basePath = configurationParameters.basePath;
         this.withCredentials = configurationParameters.withCredentials;
         this.encoder = configurationParameters.encoder;
@@ -57,41 +57,6 @@ export class Configuration {
         else {
             this.credentials = {};
         }
-{{#authMethods}}
-
-        // init default {{name}} credential
-        if (!this.credentials['{{name}}']) {
-{{#isApiKey}}
-            this.credentials['{{name}}'] = () => {
-                {{! Fallback behaviour may be removed for 5.0 release. See #5062 }}
-                return this.apiKeys['{{name}}'] || this.apiKeys['{{keyParamName}}'];
-            };
-{{/isApiKey}}
-{{#isBasic}}
-    {{#isBasicBasic}}
-            this.credentials['{{name}}'] = () => {
-                if (this.username || this.password) {
-                    return btoa(this.username + ':' + this.password);
-                }
-            };
-    {{/isBasicBasic}}
-    {{#isBasicBearer}}
-            this.credentials['{{name}}'] = () => {
-                return typeof this.accessToken === 'function'
-                    ? this.accessToken()
-                    : this.accessToken;
-            };
-    {{/isBasicBearer}}
-{{/isBasic}}
-{{#isOAuth}}
-            this.credentials['{{name}}'] = () => {
-                return typeof this.accessToken === 'function'
-                    ? this.accessToken()
-                    : this.accessToken;
-            };
-{{/isOAuth}}
-        }
-{{/authMethods}}
     }
 
     /**

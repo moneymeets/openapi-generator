@@ -6,9 +6,45 @@ import {
 } from './';
 
 {{/hasImports}}
+
+{{#tsImports}}
+import { is{{classname}} } from '{{filename}}';
+{{/tsImports}}
+
 /**
  * @type {{classname}}{{#description}}
  * {{{description}}}{{/description}}
  * @export
  */
 export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};
+
+export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}) {
+    {{#oneOf}}
+    if (is{{{.}}}(obj, true)) {
+        return removeAdditionalPropertiesFrom{{{.}}}(obj);
+    }
+    {{/oneOf}}
+    return null;
+}
+
+export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classname}} {
+    return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
+}
+
+export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
+    let errors: FieldValidationError[] = [];
+    if (obj === null || obj === undefined) {
+        if (isRequired) {
+            errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
+        }
+        return errors;
+    }
+
+    const groupedErrors = [
+        {{#oneOf}}getValidationErrors{{.}}(obj, true, isPartial){{^-last}},{{/-last}}
+        {{/oneOf}}
+    ];
+
+    errors = groupedErrors.some(errorGroup => errorGroup.length === 0) ? [] : groupedErrors.find(errorGroup => errorGroup.length > 0) ?? [];
+    return errors;
+}

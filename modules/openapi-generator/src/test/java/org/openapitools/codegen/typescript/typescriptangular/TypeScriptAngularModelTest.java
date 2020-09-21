@@ -376,7 +376,7 @@ public class TypeScriptAngularModelTest {
         final CodegenProperty property = cm.vars.get(0);
         Assert.assertEquals(property.baseName, "1list");
         Assert.assertEquals(property.dataType, "string");
-        Assert.assertEquals(property.name, "_1list");
+        Assert.assertEquals(property.name, "1list");
         Assert.assertEquals(property.defaultValue, "undefined");
         Assert.assertEquals(property.baseType, "string");
         Assert.assertFalse(property.hasMore);

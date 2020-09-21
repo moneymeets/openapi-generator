@@ -114,7 +114,7 @@ public class TypeScriptAngularClientCodegenTest {
         codegen.setOpenAPI(openAPI);
 
         CodegenOperation co1 = codegen.fromOperation("/another-fake/dummy/", "get", operation1, null);
-        org.testng.Assert.assertEquals(co1.operationId, "_123testSpecialTags");
+        org.testng.Assert.assertEquals(co1.operationId, "123testSpecialTags");
 
     }
 
