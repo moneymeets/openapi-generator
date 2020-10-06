@@ -31,6 +31,10 @@ export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classna
     return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
 }
 
+export function is{{classname}}Array(x: any, isRequired: boolean): x is Array<{{classname}}> {
+    return isArray(x, isRequired) && x.every(item => is{{classname}}(item, true));
+}
+
 export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
     let errors: FieldValidationError[] = [];
     if (obj === null || obj === undefined) {

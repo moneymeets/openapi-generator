@@ -9,7 +9,7 @@ import { flatMap } from 'rxjs/operators';
 
 // prettier-ignore
 // @ts-ignore
-import { isnumber, isstring, isboolean, isArray, getValidationErrorsnumber, getValidationErrorsstring, getValidationErrorsboolean, getValidationErrorsArray } from '../../primitive-types-checks';
+import { isnumber, isstring, isboolean, getValidationErrorsnumber, getValidationErrorsstring, getValidationErrorsboolean, getValidationErrorsArray } from '../../primitive-types-checks';
 // prettier-ignore
 // @ts-ignore
 import { RequestBodyValidationError, RequestParameterValidationError, RequestQueryParameterValidationError, ResponseBodyValidationError, ResponseHttpStatusError } from '../../validation-errors';
@@ -17,7 +17,7 @@ import { RequestBodyValidationError, RequestParameterValidationError, RequestQue
 {{#imports}}
 // prettier-ignore
 // @ts-ignore
-import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, getValidationErrors{{classname}} } from '../model/models';
+import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, is{{classname}}Array, getValidationErrors{{classname}} } from '../model/models';
 {{/imports}}
 
 import { ApiConfig } from '../../api-config';
@@ -299,14 +299,14 @@ export class {{classname}} {
                     {{^is4xx}}{{^is5xx}}
                     case {{code}}:
                     {{#dataType}}
-                        return is{{{dataType}}}(responseBody, true)
+                        return {{#isListContainer}}is{{{baseType}}}Array{{/isListContainer}}{{^isListContainer}}is{{{dataType}}}{{/isListContainer}}(responseBody, true)
                             ? of(responseBody)
                             : throwError(
                                 new ResponseBodyValidationError(
                                   '{{classname}}.{{nickname}}',
                                   '{{{dataType}}}',
                                   responseBody,
-                                  getValidationErrors{{{dataType}}}(responseBody, true{{^primitiveType}}{{^isListContainer}}, false{{/isListContainer}}{{/primitiveType}})
+                                  {{#isListContainer}}getValidationErrorsArray(responseBody, true){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, true{{^primitiveType}}, false{{/primitiveType}}){{/isListContainer}}
                                 )
                               );
                     {{/dataType}}
