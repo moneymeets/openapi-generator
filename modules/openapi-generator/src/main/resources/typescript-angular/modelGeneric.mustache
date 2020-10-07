@@ -40,6 +40,10 @@ export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classna
     return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
 }
 
+export function is{{classname}}Array(x: any, isRequired: boolean): x is Array<{{classname}}> {
+    return isArray(x, isRequired) && x.every(item => is{{classname}}(item, true));
+}
+
 export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
     const errors: FieldValidationError[] = {{^allParents}}[];{{/allParents}}{{#allParents}}[
         ...getValidationErrors{{.}}(obj, isRequired, isPartial){{^-last}},{{/-last}}
@@ -53,7 +57,7 @@ export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, 
     }
     {{#vars}}
     {{#isListContainer}}
-    if ((!isPartial || obj.hasOwnProperty('{{name}}')) && getValidationErrors{{{dataType}}}(obj.{{name}}, {{required}}).length > 0) {
+    if ((!isPartial || obj.hasOwnProperty('{{name}}')) && getValidationErrorsArray(obj.{{name}}, {{required}}).length > 0) {
         errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}} });
     }
     else if (obj.{{name}}) {
