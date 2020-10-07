@@ -18,3 +18,43 @@ export const {{classname}} = {
 {{/allowableValues}}
 };
 {{/stringEnums}}
+
+export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}): {{classname}} {
+    throw new Error('removeAdditionalPropertiesFrom{{classname}} is not implemented!');
+}
+
+export function removeAdditionalPropertiesFromPartial{{classname}}(obj: Partial<{{classname}}>) {
+    throw new Error('removeAdditionalPropertiesFromPartial{{classname}} is not implemented!');
+}
+
+export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classname}} {
+    return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
+}
+
+export function is{{classname}}Array(x: any, isRequired: boolean): x is Array<{{classname}}> {
+    return isArray(x, isRequired) && x.every(item => is{{classname}}(item, true));
+}
+
+export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
+    if (isPartial) {
+        throw new Error('Enum model error validation must always be called with isPartial === false.')
+    }
+    const errors: FieldValidationError[] = [];
+    if (obj === null || obj === undefined) {
+        if (isRequired) {
+            errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
+        }
+        return errors;
+    }
+
+    if (
+    {{#allowableValues}}
+    {{#enumVars}}
+    obj !== {{classname}}.{{{name}}}{{^-last}} && {{/-last}}
+    {{/enumVars}}
+    {{/allowableValues}}
+    ) {
+        errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
+    }
+    return errors;
+}
