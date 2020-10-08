@@ -47,6 +47,13 @@ export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterIn
 {{/useSingleRequestParameter}}
 {{/withInterfaces}}
 
+{{#operation}}
+export function {{nickname}}Url({{#pathParams}}{{paramName}}: {{dataType}} | '*'{{#hasMore}}, {{/hasMore}}{{/pathParams}}) {
+    return `{{{path}}}`;
+}
+
+{{/operation}}
+
 {{#description}}
 /**
  * {{&description}}
@@ -282,7 +289,7 @@ export class {{classname}} {
 {{/formParams}}
 
 {{/hasFormParams}}
-        return this.httpClient.{{httpMethod}}(`${this.configuration.basePath}{{{path}}}`,{{#isBodyAllowed}}
+        return this.httpClient.{{httpMethod}}(`${this.configuration.basePath}${ {{nickname}}Url({{#pathParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/pathParams}})}`,{{#isBodyAllowed}}
             {{#bodyParam}}{{#required}}removeAdditionalPropertiesFrom{{#isBodyParam}}{{#isRestfulPartialUpdate}}Partial{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{{dataType}}}({{paramName}}){{/required}}{{^required}}{{paramName}} ? removeAdditionalPropertiesFrom{{#isBodyParam}}{{#isRestfulPartialUpdate}}Partial{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{{dataType}}}({{paramName}}) : null{{/required}}{{/bodyParam}}{{^bodyParam}}{{#hasFormParams}}convertFormParamsToString ? formParams.toString() : formParams{{/hasFormParams}}{{^hasFormParams}}null{{/hasFormParams}}{{/bodyParam}},{{/isBodyAllowed}}
             {
     {{#hasQueryParams}}
