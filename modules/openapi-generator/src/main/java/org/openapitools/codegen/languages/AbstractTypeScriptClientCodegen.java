@@ -648,6 +648,8 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         }
 
         // string
+        name = name.replaceFirst("^-", "minus_");
+
         String enumName = sanitizeName(name);
         enumName = enumName.replaceFirst("^_", "");
         enumName = enumName.replaceFirst("_$", "");
