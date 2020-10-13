@@ -169,7 +169,7 @@ export class {{classname}} {
 {{#useSingleRequestParameter}}
         const {{paramName}} = requestParameters.{{paramName}};
 {{/useSingleRequestParameter}}
-        const {{paramName}}ValidationErrors = getValidationErrors{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isEnum}}{{#isString}}string{{/isString}}{{^isString}}number{{/isString}}{{/isEnum}}({{paramName}}, {{required}}{{^isPrimitiveType}}{{^isContainer}}, {{^isBodyParam}}false{{/isBodyParam}}{{#isBodyParam}}{{^isRestfulPartialUpdate}}false{{/isRestfulPartialUpdate}}{{#isRestfulPartialUpdate}}true{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{/isContainer}}{{/isPrimitiveType}});
+        const {{paramName}}ValidationErrors = {{#isListContainer}}getValidationErrorsArray{{/isListContainer}}{{^isListContainer}}getValidationErrors{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isEnum}}{{#isString}}string{{/isString}}{{^isString}}number{{/isString}}{{/isEnum}}{{/isListContainer}}({{paramName}}, {{required}}{{^isPrimitiveType}}{{^isContainer}}, {{^isBodyParam}}false{{/isBodyParam}}{{#isBodyParam}}{{^isRestfulPartialUpdate}}false{{/isRestfulPartialUpdate}}{{#isRestfulPartialUpdate}}true{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{/isContainer}}{{/isPrimitiveType}});
         if ({{paramName}}ValidationErrors.length > 0) {
           return throwError(new {{#isQueryParam}}RequestQueryParameterValidationError{{/isQueryParam}}{{#isBodyParam}}RequestBodyValidationError{{/isBodyParam}}{{^isQueryParam}}{{^isBodyParam}}RequestParameterValidationError{{/isBodyParam}}{{/isQueryParam}}('{{classname}}.{{nickname}}', '{{paramName}}', {{paramName}}, {{paramName}}ValidationErrors));
         }
