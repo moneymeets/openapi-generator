@@ -1,3 +1,12 @@
+{{#tsImports}}
+// prettier-ignore
+// @ts-ignore
+import { {{classname}}, modelFields{{classname}} } from '{{filename}}';
+{{/tsImports}}
+// prettier-ignore
+// @ts-ignore
+import { ModelFieldArray, ModelFieldboolean, ModelFieldnumber, ModelFieldObject, ModelFields, ModelFieldstring, removeAdditionalProperties } from '../../model-field';
+
 {{^vars}}/* tslint:disable:no-empty-interface */{{/vars}}
 export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.}}}{{^-last}}, {{/-last}}{{/allParents}} { {{>modelGenericAdditionalProperties}}
 {{#vars}}
@@ -10,83 +19,43 @@ export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.
 {{/vars}}
 }{{>modelGenericEnums}}
 
-export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}): {{classname}} {
-    return {
-        {{#allParents}}...removeAdditionalPropertiesFrom{{.}}(obj){{^-last}},
-        {{/-last}}{{#-last}}{{#vars}},
-        {{/vars}}{{/-last}}{{/allParents}}
+export interface ModelFields{{classname}} extends ModelFields {
     {{#vars}}
-        {{name}}: {{#isListContainer}}obj.{{name}}{{^required}}?{{/required}}.map(item => {{#items.isPrimitiveType}}item{{/items.isPrimitiveType}}{{^items.isPrimitiveType}}removeAdditionalPropertiesFrom{{{items.dataType}}}(item){{/items.isPrimitiveType}}){{/isListContainer}}{{^isListContainer}}{{#isPrimitiveType}}obj.{{name}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{^required}}obj.{{name}} ? {{/required}}removeAdditionalPropertiesFrom{{{dataType}}}(obj.{{name}}){{^required}} : undefined{{/required}}{{/isPrimitiveType}}{{/isListContainer}}{{#hasMore}},{{/hasMore}}
+    {{{name}}}: {{^isListContainer}}{{#isPrimitiveType}}ModelField{{{dataType}}}{{/isPrimitiveType}}{{^isPrimitiveType}}ModelFieldObject{{/isPrimitiveType}}{{/isListContainer}}{{#isListContainer}}ModelFieldArray{{/isListContainer}};
     {{/vars}}
-    };
+}
+
+export const modelFields{{classname}}: ModelFields{{classname}} = {
+    {{#vars}}
+    {{{name}}}:
+    {{^isListContainer}}{{#isPrimitiveType}}new ModelField{{{dataType}}}('{{{name}}}', { required: {{required}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}} }){{/isPrimitiveType}}{{^isPrimitiveType}}new ModelFieldObject('{{{name}}}', { required: {{required}} }, modelFields{{{dataType}}}, false){{/isPrimitiveType}}{{/isListContainer}}
+    {{#isListContainer}}{{#items.isPrimitiveType}}new ModelFieldArray('{{{name}}}', { required: {{required}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }, new ModelField{{{items.dataType}}}('{{{name}}}', { required: {{required}} })){{/items.isPrimitiveType}}{{^items.isPrimitiveType}}new ModelFieldArray('{{{name}}}', { required: true{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }, new ModelFieldObject('', { required: true }, modelFields{{{complexType}}}, false)){{/items.isPrimitiveType}}{{/isListContainer}},
+    {{/vars}}
+    {{#allParents}}...modelFields{{{.}}},{{/allParents}}
+};
+
+export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}): {{classname}} {
+    return removeAdditionalProperties<{{classname}}>(obj, modelFields{{classname}});
 }
 
 export function removeAdditionalPropertiesFromPartial{{classname}}(obj: Partial<{{classname}}>) {
-    const ret: Partial<{{classname}}> = {
-        {{#allParents}}...removeAdditionalPropertiesFromPartial{{.}}(obj){{^-last}},{{/-last}}
-        {{/allParents}}
-    };
-
-    {{#vars}}
-    if (obj.hasOwnProperty('{{name}}'){{#required}}{{#isListContainer}} && obj.{{name}}{{/isListContainer}}{{^isListContainer}}{{^isPrimitiveType}} && obj.{{name}}{{/isPrimitiveType}}{{/isListContainer}}{{/required}}) {
-        ret.{{name}} = {{#isListContainer}}obj.{{name}}{{^required}}?{{/required}}.map(item => {{#items.isPrimitiveType}}item{{/items.isPrimitiveType}}{{^items.isPrimitiveType}}removeAdditionalPropertiesFrom{{{items.dataType}}}(item){{/items.isPrimitiveType}}){{/isListContainer}}{{^isListContainer}}{{#isPrimitiveType}}obj.{{name}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{^required}}obj.{{name}} ? {{/required}}removeAdditionalPropertiesFrom{{{dataType}}}(obj.{{name}}){{^required}} : undefined{{/required}}{{/isPrimitiveType}}{{/isListContainer}};
-    }
-    {{/vars}}
-
-    return ret;
+    return removeAdditionalProperties<Partial<{{classname}}>>(obj, modelFields{{classname}});
 }
 
-export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classname}} {
-    return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
+export function is{{classname}}(obj: any, constraints: ObjectConstraints): obj is {{classname}} {
+    return !getValidationErrors{{classname}}(obj, constraints, false);
 }
 
-export function is{{classname}}Array(x: any, isRequired: boolean): x is Array<{{classname}}> {
-    return isArray(x, isRequired) && x.every(item => is{{classname}}(item, true));
+export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is Array<{{classname}}> {
+    return !getValidationErrors{{classname}}Array(x, constraints);
 }
 
-export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
-    const errors: FieldValidationError[] = {{^allParents}}[];{{/allParents}}{{#allParents}}[
-        ...getValidationErrors{{.}}(obj, isRequired, isPartial){{^-last}},{{/-last}}
-    ];{{/allParents}}
+export function getValidationErrors{{classname}}(obj: any, constraints: ObjectConstraints, isPartial: boolean) {
+    const modelField = new ModelFieldObject('{{classname}}', constraints, modelFields{{classname}}, isPartial);
+    return modelField.getValidationErrors(obj);
+}
 
-    if (obj === null || obj === undefined) {
-        if (isRequired) {
-            errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
-        }
-        return errors;
-    }
-    {{#vars}}
-    {{#isListContainer}}
-    if ((!isPartial || obj.hasOwnProperty('{{name}}')) && getValidationErrorsArray(obj.{{name}}, {{required}}).length > 0) {
-        errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}} });
-    }
-    else if (obj.{{name}}) {
-        obj.{{name}}.forEach((item: any, index: number) => {
-            const fieldErrors = getValidationErrors{{{items.dataType}}}(item, true{{^items.isPrimitiveType}}{{^items.isContainer}}, false{{/items.isContainer}}{{/items.isPrimitiveType}});
-            if (fieldErrors.length > 0) {
-                errors.push({
-                    fieldName: `obj.{{name}}[${index}]`,
-                    expectedType: '{{items.dataType}}',
-                    actualValue: item,
-                    errors: fieldErrors
-                });
-            }
-        });
-    }
-    {{/isListContainer}}
-    {{^isListContainer}}
-    {{#isPrimitiveType}}
-    if ((!isPartial || obj.hasOwnProperty('{{name}}')) && getValidationErrors{{{dataType}}}(obj.{{name}}, {{required}}).length > 0) {
-        errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}} });
-    }
-    {{/isPrimitiveType}}
-    {{^isPrimitiveType}}
-    const {{{name}}}ValidationErrors = (!isPartial || obj.hasOwnProperty('{{name}}')) ? getValidationErrors{{{dataType}}}(obj.{{name}}, {{required}}, false) : [];
-    if ({{{name}}}ValidationErrors.length > 0) {
-        errors.push({ fieldName: '{{name}}', expectedType: '{{{dataType}}}', actualValue: obj.{{name}}, errors: {{{name}}}ValidationErrors });
-    }
-    {{/isPrimitiveType}}
-    {{/isListContainer}}
-    {{/vars}}
-    return errors;
+export function getValidationErrors{{classname}}Array(obj: any, constraints: ArrayConstraints) {
+  const modelField = new ModelFieldArray('{{classname}}Array', constraints, new ModelFieldObject('{{classname}}', constraints, modelFields{{classname}}, false));
+  return modelField.getValidationErrors(obj);
 }

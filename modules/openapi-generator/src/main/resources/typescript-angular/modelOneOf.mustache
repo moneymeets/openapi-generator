@@ -8,8 +8,9 @@ import {
 {{/hasImports}}
 
 {{#tsImports}}
-import { is{{classname}} } from '{{filename}}';
+import { is{{classname}}, {{classname}}, removeAdditionalPropertiesFrom{{classname}}, getValidationErrors{{classname}}, getValidationErrors{{classname}}Array } from '{{filename}}';
 {{/tsImports}}
+import { FieldValidationError } from '../../validation-errors';
 
 /**
  * @type {{classname}}{{#description}}
@@ -20,35 +21,33 @@ export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};
 
 export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}) {
     {{#oneOf}}
-    if (is{{{.}}}(obj, true)) {
+    if (is{{{.}}}(obj, { required: true })) {
         return removeAdditionalPropertiesFrom{{{.}}}(obj);
     }
     {{/oneOf}}
     return null;
 }
 
-export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classname}} {
-    return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
+export function is{{classname}}(obj: any, constraints: ObjectConstraints): obj is {{classname}} {
+    return !getValidationErrors{{classname}}(obj, constraints, false);
 }
 
-export function is{{classname}}Array(x: any, isRequired: boolean): x is Array<{{classname}}> {
-    return isArray(x, isRequired) && x.every(item => is{{classname}}(item, true));
+export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is Array<{{classname}}> {
+    return !getValidationErrors{{classname}}Array(x, constraints);
 }
 
-export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
-    let errors: FieldValidationError[] = [];
-    if (obj === null || obj === undefined) {
-        if (isRequired) {
-            errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
-        }
-        return errors;
-    }
-
+export function getValidationErrors{{classname}}(obj: any, constraints: ObjectConstraints, isPartial: boolean): FieldValidationError | null {
     const groupedErrors = [
-        {{#oneOf}}getValidationErrors{{.}}(obj, true, isPartial){{^-last}},{{/-last}}
+        {{#oneOf}}getValidationErrors{{.}}(obj, constraints, isPartial){{^-last}},{{/-last}}
         {{/oneOf}}
     ];
+    return groupedErrors.some(errorGroup => errorGroup === null) ? null : groupedErrors.find(errorGroup => errorGroup !== null) ?? null;
+}
 
-    errors = groupedErrors.some(errorGroup => errorGroup.length === 0) ? [] : groupedErrors.find(errorGroup => errorGroup.length > 0) ?? [];
-    return errors;
+export function getValidationErrors{{classname}}Array(obj: any, constraints: ArrayConstraints) {
+    const groupedErrors = [
+        {{#oneOf}}getValidationErrors{{.}}Array(obj, constraints){{^-last}},{{/-last}}
+        {{/oneOf}}
+    ];
+    return groupedErrors.some(errorGroup => errorGroup === null) ? null : groupedErrors.find(errorGroup => errorGroup !== null) ?? null;
 }
