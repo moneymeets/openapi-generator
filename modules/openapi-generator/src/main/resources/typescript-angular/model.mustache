@@ -1,15 +1,7 @@
 {{>licenseInfo}}
 {{#models}}
 {{#model}}
-{{#tsImports}}
-// prettier-ignore
-// @ts-ignore
-import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, getValidationErrors{{classname}} } from '{{filename}}';
-{{/tsImports}}
-// prettier-ignore
-// @ts-ignore
-import { isArray, getValidationErrorsArray, getValidationErrorsboolean, getValidationErrorsnumber, getValidationErrorsstring } from '../../primitive-types-checks';
-import { FieldValidationError } from '../../validation-errors';
+import { ArrayConstraints, ObjectConstraints } from '../../model-constraints';
 
 {{#description}}
 /**

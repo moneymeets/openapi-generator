@@ -27,34 +27,22 @@ export function removeAdditionalPropertiesFromPartial{{classname}}(obj: Partial<
     throw new Error('removeAdditionalPropertiesFromPartial{{classname}} is not implemented!');
 }
 
-export function is{{classname}}(obj: any, isRequired: boolean): obj is {{classname}} {
-    return (!isRequired && (obj === null || obj === undefined)) || getValidationErrors{{classname}}(obj, isRequired, false).length === 0;
+export function is{{classname}}(obj: any, constraints: ObjectConstraints): obj is {{classname}} {
+    return !getValidationErrors{{classname}}(obj, constraints, false);
 }
 
-export function is{{classname}}Array(x: any, isRequired: boolean): x is Array<{{classname}}> {
-    return isArray(x, isRequired) && x.every(item => is{{classname}}(item, true));
+export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is Array<{{classname}}> {
+    return !getValidationErrors{{classname}}Array(x, constraints);
 }
 
-export function getValidationErrors{{classname}}(obj: any, isRequired: boolean, isPartial: boolean) {
-    if (isPartial) {
-        throw new Error('Enum model error validation must always be called with isPartial === false.')
-    }
-    const errors: FieldValidationError[] = [];
-    if (obj === null || obj === undefined) {
-        if (isRequired) {
-            errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
-        }
-        return errors;
-    }
+export function getValidationErrors{{classname}}(obj: any, constraints: ObjectConstraints, isPartial: boolean) {
+    // NOT IMPLEMENTED
+    // Compiler should complain as soon as this code is generated since function parameters are unused.
+    return null;
+}
 
-    if (
-    {{#allowableValues}}
-    {{#enumVars}}
-    obj !== {{classname}}.{{{name}}}{{^-last}} && {{/-last}}
-    {{/enumVars}}
-    {{/allowableValues}}
-    ) {
-        errors.push({ fieldName: '.', expectedType: '{{{classname}}}', actualValue: obj });
-    }
-    return errors;
+export function getValidationErrors{{classname}}Array(obj: any, constraints: ArrayConstraints) {
+    // NOT IMPLEMENTED
+    // Compiler should complain as soon as this code is generated since function parameters are unused.
+    return null;
 }
