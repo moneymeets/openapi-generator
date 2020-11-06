@@ -9,7 +9,10 @@ import { flatMap } from 'rxjs/operators';
 
 // prettier-ignore
 // @ts-ignore
-import { isnumber, isstring, isboolean, getValidationErrorsnumber, getValidationErrorsstring, getValidationErrorsboolean, getValidationErrorsArray } from '../../primitive-types-checks';
+import { isnumber, isstring, isboolean, getValidationErrorsnumber, getValidationErrorsstring, getValidationErrorsboolean } from '../../primitive-types-checks';
+// prettier-ignore
+// @ts-ignore
+import { getValidationErrorsnumberArray, getValidationErrorsstringArray, getValidationErrorsbooleanArray } from '../../model-field';
 // prettier-ignore
 // @ts-ignore
 import { RequestBodyValidationError, RequestParameterValidationError, RequestQueryParameterValidationError, ResponseBodyValidationError, ResponseHttpStatusError } from '../../validation-errors';
@@ -17,7 +20,7 @@ import { RequestBodyValidationError, RequestParameterValidationError, RequestQue
 {{#imports}}
 // prettier-ignore
 // @ts-ignore
-import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, is{{classname}}Array, getValidationErrors{{classname}} } from '../model/models';
+import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, is{{classname}}Array, getValidationErrors{{classname}}, getValidationErrors{{classname}}Array } from '../model/models';
 {{/imports}}
 
 import { ApiConfig } from '../../api-config';
@@ -169,8 +172,14 @@ export class {{classname}} {
 {{#useSingleRequestParameter}}
         const {{paramName}} = requestParameters.{{paramName}};
 {{/useSingleRequestParameter}}
-        const {{paramName}}ValidationErrors = {{#isListContainer}}getValidationErrorsArray{{/isListContainer}}{{^isListContainer}}getValidationErrors{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isEnum}}{{#isString}}string{{/isString}}{{^isString}}number{{/isString}}{{/isEnum}}{{/isListContainer}}({{paramName}}, {{required}}{{^isPrimitiveType}}{{^isContainer}}, {{^isBodyParam}}false{{/isBodyParam}}{{#isBodyParam}}{{^isRestfulPartialUpdate}}false{{/isRestfulPartialUpdate}}{{#isRestfulPartialUpdate}}true{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{/isContainer}}{{/isPrimitiveType}});
-        if ({{paramName}}ValidationErrors.length > 0) {
+        const {{paramName}}ValidationErrors =
+        {{#isListContainer}}
+        getValidationErrors{{{baseType}}}Array({{paramName}}, { required: {{required}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}} }{{/isPrimitiveType}}{{/items}});
+        {{/isListContainer}}
+        {{^isListContainer}}
+        getValidationErrors{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isEnum}}{{#isString}}string{{/isString}}{{^isString}}number{{/isString}}{{/isEnum}}({{paramName}}, { required: {{required}}{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, {{^isBodyParam}}false{{/isBodyParam}}{{#isBodyParam}}{{^isRestfulPartialUpdate}}false{{/isRestfulPartialUpdate}}{{#isRestfulPartialUpdate}}true{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{/isPrimitiveType}});
+        {{/isListContainer}}
+        if ({{paramName}}ValidationErrors) {
           return throwError(new {{#isQueryParam}}RequestQueryParameterValidationError{{/isQueryParam}}{{#isBodyParam}}RequestBodyValidationError{{/isBodyParam}}{{^isQueryParam}}{{^isBodyParam}}RequestParameterValidationError{{/isBodyParam}}{{/isQueryParam}}('{{classname}}.{{nickname}}', '{{paramName}}', {{paramName}}, {{paramName}}ValidationErrors));
         }
 {{/allParams}}
@@ -306,14 +315,14 @@ export class {{classname}} {
                     {{^is4xx}}{{^is5xx}}
                     case {{code}}:
                     {{#dataType}}
-                        return {{#isListContainer}}is{{{baseType}}}Array{{/isListContainer}}{{^isListContainer}}is{{{dataType}}}{{/isListContainer}}(responseBody, true)
+                        return {{#isListContainer}}is{{{baseType}}}Array(responseBody, { required: true{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}is{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{/isPrimitiveType}} }){{/isListContainer}}
                             ? of(responseBody)
                             : throwError(
                                 new ResponseBodyValidationError(
                                   '{{classname}}.{{nickname}}',
                                   '{{{dataType}}}',
                                   responseBody,
-                                  {{#isListContainer}}getValidationErrorsArray(responseBody, true){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, true{{^primitiveType}}, false{{/primitiveType}}){{/isListContainer}}
+                                  {{#isListContainer}}getValidationErrors{{{baseType}}}Array(responseBody, { required: true{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#format}}, format: '{{format}}'{{/format}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, false{{/isPrimitiveType}}){{/isListContainer}}
                                 )
                               );
                     {{/dataType}}
