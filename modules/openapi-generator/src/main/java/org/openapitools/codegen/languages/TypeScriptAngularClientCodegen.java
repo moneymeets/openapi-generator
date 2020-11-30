@@ -542,6 +542,15 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
         return apiPackage() + "/" + toApiFilename(name);
     }
 
+    /**
+     * Overriding toRegularExpression() to avoid escapeText() being called,
+     * as it would return a broken regular expression if any escaped character / metacharacter were present.
+     */
+    @Override
+    public String toRegularExpression(String pattern) {
+        return addRegularExpressionDelimiter(pattern);
+    }
+
     @Override
     public String toModelFilename(String name) {
         if (importMapping.containsKey(name)) {

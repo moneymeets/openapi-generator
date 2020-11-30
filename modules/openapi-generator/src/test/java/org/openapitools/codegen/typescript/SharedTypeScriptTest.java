@@ -64,8 +64,8 @@ public class SharedTypeScriptTest {
         final List<File> files = getGenerator(config).generate();
         File pets = files.stream().filter(file->file.getName().contains("pet.ts")).findFirst().get();
         String apiFileContent = FileUtils.readFileToString(pets);
-        Assert.assertTrue(apiFileContent.contains("import { Category, removeAdditionalPropertiesFromCategory, removeAdditionalPropertiesFromPartialCategory, getValidationErrorsCategory }"));
-        Assert.assertTrue(apiFileContent.contains("import { Tag, removeAdditionalPropertiesFromTag, removeAdditionalPropertiesFromPartialTag, getValidationErrorsTag }"));
+        Assert.assertTrue(apiFileContent.contains("import { Category, modelFieldsCategory }"));
+        Assert.assertTrue(apiFileContent.contains("import { Tag, modelFieldsTag }"));
 
         FileUtils.deleteDirectory(new File("src/test/resources/oldImportsStillPresentTest/"));
     }
