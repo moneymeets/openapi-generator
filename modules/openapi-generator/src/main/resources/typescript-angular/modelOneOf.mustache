@@ -41,7 +41,14 @@ export function getValidationErrors{{classname}}(obj: any, constraints: ObjectCo
         {{#oneOf}}getValidationErrors{{.}}(obj, constraints, isPartial){{^-last}},{{/-last}}
         {{/oneOf}}
     ];
-    return groupedErrors.some(errorGroup => errorGroup === null) ? null : groupedErrors.find(errorGroup => errorGroup !== null) ?? null;
+    return groupedErrors.some(errorGroup => errorGroup === null)
+        ? null
+        : {
+              fieldName: '{{classname}}',
+              expectedType: '{{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}}',
+              actualValue: obj,
+              errors: groupedErrors as FieldValidationError[]
+          };
 }
 
 export function getValidationErrors{{classname}}Array(obj: any, constraints: ArrayConstraints) {
@@ -49,5 +56,13 @@ export function getValidationErrors{{classname}}Array(obj: any, constraints: Arr
         {{#oneOf}}getValidationErrors{{.}}Array(obj, constraints){{^-last}},{{/-last}}
         {{/oneOf}}
     ];
-    return groupedErrors.some(errorGroup => errorGroup === null) ? null : groupedErrors.find(errorGroup => errorGroup !== null) ?? null;
+    return groupedErrors.some(errorGroup => errorGroup === null)
+        ? null
+        : {
+              fieldName: '{{classname}}',
+              expectedType: 'Array<{{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}}>',
+              actualValue: obj,
+              errors: groupedErrors as FieldValidationError[]
+        };
+;
 }
