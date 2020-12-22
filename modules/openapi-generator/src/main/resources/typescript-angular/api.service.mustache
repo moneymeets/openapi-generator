@@ -1,5 +1,5 @@
 {{>licenseInfo}}
-/* tslint:disable:no-magic-numbers no-unused-variable member-ordering */
+/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/no-unused-vars, @typescript-eslint/member-ordering */
 
 import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
@@ -52,7 +52,7 @@ export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterIn
 
 {{#operation}}
 export function {{nickname}}Url({{#pathParams}}{{paramName}}: {{dataType}} | '*'{{#hasMore}}, {{/hasMore}}{{/pathParams}}) {
-    return `{{{path}}}`;
+    return {{#hasPathParams}}`{{{path}}}`{{/hasPathParams}}{{^hasPathParams}}'{{{path}}}'{{/hasPathParams}};
 }
 
 {{/operation}}
