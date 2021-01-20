@@ -1,7 +1,7 @@
 {{#tsImports}}
 // prettier-ignore
 // @ts-ignore
-import { {{classname}}, modelFields{{classname}} } from '{{filename}}';
+import { {{classname}}, ModelFields{{classname}}, modelFields{{classname}} } from '{{filename}}';
 {{/tsImports}}
 // prettier-ignore
 // @ts-ignore
@@ -21,7 +21,7 @@ export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.
 
 export interface ModelFields{{classname}} extends ModelFields {
     {{#vars}}
-    {{{name}}}: {{^isListContainer}}{{#isPrimitiveType}}ModelField{{{dataType}}}{{/isPrimitiveType}}{{^isPrimitiveType}}ModelFieldObject{{/isPrimitiveType}}{{/isListContainer}}{{#isListContainer}}ModelFieldArray{{/isListContainer}};
+    {{{name}}}: {{^isListContainer}}{{#isPrimitiveType}}ModelField{{{dataType}}}{{/isPrimitiveType}}{{^isPrimitiveType}}ModelFieldObject<ModelFields{{{dataType}}}>{{/isPrimitiveType}}{{/isListContainer}}{{#isListContainer}}ModelFieldArray{{/isListContainer}};
     {{/vars}}
 }
 
