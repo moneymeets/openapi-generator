@@ -5,7 +5,7 @@ import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
 import { CustomHttpParameterCodec } from '../encoder';
 import { of, throwError } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 // prettier-ignore
 // @ts-ignore
@@ -308,7 +308,7 @@ export class {{classname}} {
                 observe: 'response'
             }
         ).pipe(
-            flatMap(response => {
+            mergeMap(response => {
                 const responseBody = response.body;
                 switch (response.status) {
                 {{#responses}}
