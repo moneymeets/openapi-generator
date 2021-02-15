@@ -320,7 +320,7 @@ export class {{classname}} {
                             : throwError(
                                 new ResponseBodyValidationError(
                                   '{{classname}}.{{nickname}}',
-                                  '{{{dataType}}}',
+                                  '{{#isListContainer}}Array<{{{baseType}}}>{{/isListContainer}}{{^isListContainer}}{{{dataType}}}{{/isListContainer}}',
                                   responseBody,
                                   {{#isListContainer}}getValidationErrors{{{baseType}}}Array(responseBody, { required: true{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, false{{/isPrimitiveType}}){{/isListContainer}}
                                 )

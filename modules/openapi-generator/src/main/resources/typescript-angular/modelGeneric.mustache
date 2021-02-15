@@ -15,7 +15,7 @@ export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.
      * {{{description}}}
      */
     {{/description}}
-    {{#isReadOnly}}readonly {{/isReadOnly}}{{{name}}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}} | null{{/required}};
+    {{#isReadOnly}}readonly {{/isReadOnly}}{{{name}}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{#isListContainer}}Array<{{{items.dataType}}}>{{/isListContainer}}{{^isListContainer}}{{{dataType}}}{{/isListContainer}}{{/isEnum}}{{^required}} | null{{/required}};
 {{/vars}}
 }{{>modelGenericEnums}}
 
