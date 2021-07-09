@@ -1,0 +1,24 @@
+name: CI
+on: [ push ]
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_REGISTRY: moneymeets/openapi-generator
+      TAG: frontend
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build -t $DOCKER_REGISTRY:$TAG .
+
+      - name: Publish image
+        if: github.ref == 'refs/heads/moneymeets-typescript-angular'
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push $DOCKER_REGISTRY:$TAG
