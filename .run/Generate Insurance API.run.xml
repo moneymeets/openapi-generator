@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Generate Insurance API" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="openjdk-16" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="org.openapitools.codegen.OpenAPIGenerator" />
+    <module name="openapi-generator-cli" />
+    <option name="PROGRAM_PARAMETERS" value="generate -i ../django-insurance-api-v2/api/spec/api.yml -g typescript-angular -o ../moneymeets-app/src/api/insurance -p fileNaming=kebab-case -p providedInRoot=true -p apiModulePrefix=Insurance -p serviceSuffix=ApiService -p serviceFileSuffix=-api.service -p stringEnums=true -p enumPropertyNaming=UPPERCASE -p apiName=insurance" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
