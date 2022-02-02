@@ -86,6 +86,7 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
         embeddedTemplateDir = templateDir = "typescript-angular";
         modelTemplateFiles.put("model.mustache", ".ts");
         apiTemplateFiles.put("api.service.mustache", ".ts");
+        apiTemplateFiles.put("api.url.mustache", ".ts");
         languageSpecificPrimitives.add("Blob");
         typeMapping.put("file", "Blob");
         apiPackage = "api";
@@ -362,6 +363,7 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
 
         // Add filename information for api imports
         objs.put("apiFilename", getApiFilenameFromClassname(objs.get("classname").toString()));
+        operations.put("baseNameKebabCase", this.convertUsingFileNamingConvention(objs.get("pathPrefix").toString()));
 
         List<CodegenOperation> ops = (List<CodegenOperation>) objs.get("operation");
         boolean hasSomeFormParams = false;
@@ -532,6 +534,15 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
             return "default.service";
         }
         return this.convertUsingFileNamingConvention(name) + serviceFileSuffix;
+    }
+
+    @Override
+    public String apiFilename(String templateName, String tag) {
+        String suffix = apiTemplateFiles().get(templateName);
+        if (templateName == "api.url.mustache") {
+            return apiFileFolder() + File.separator + this.convertUsingFileNamingConvention(tag) + ".url" + suffix;
+        }
+        return apiFileFolder() + File.separator + toApiFilename(tag) + suffix;
     }
 
     @Override

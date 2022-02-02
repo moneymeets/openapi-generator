@@ -32,6 +32,8 @@ import {
 } from './{{classFilename}}Interface';
 {{/withInterfaces}}
 
+import { {{#operations}}{{#operation}}{{nickname}}Url{{#hasMore}}, {{/hasMore}}{{/operation}}{{/operations}} } from './{{baseNameKebabCase}}.url';
+
 {{#operations}}
 
 {{^withInterfaces}}
@@ -49,13 +51,6 @@ export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterIn
 {{/operation}}
 {{/useSingleRequestParameter}}
 {{/withInterfaces}}
-
-{{#operation}}
-export function {{nickname}}Url({{#pathParams}}{{paramName}}: {{dataType}} | '*'{{#hasMore}}, {{/hasMore}}{{/pathParams}}) {
-    return {{#hasPathParams}}`{{{path}}}`{{/hasPathParams}}{{^hasPathParams}}'{{{path}}}'{{/hasPathParams}};
-}
-
-{{/operation}}
 
 {{#description}}
 /**
