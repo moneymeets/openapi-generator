@@ -136,6 +136,12 @@ public class TypeScriptAngularClientCodegen extends AbstractTypeScriptClientCode
     @Override
     public void processOpts() {
         super.processOpts();
+        ////////////
+        // The flag `generateSupportingFiles` does not really make sense for this generator, since all supporting files
+        // except models.ts, api.ts and index.ts are always needed and it should never be possible to not generate them.
+        // Therefore, we disabled generating models.ts, api.ts and index.ts by simply commenting out the code.
+        ////////////
+
         // supportingFiles.add(
         //         new SupportingFile("models.mustache", modelPackage().replace('.', File.separatorChar), "models.ts"));
         // supportingFiles
