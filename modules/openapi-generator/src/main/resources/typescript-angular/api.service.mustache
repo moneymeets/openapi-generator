@@ -20,7 +20,7 @@ import { RequestBodyValidationError, RequestParameterValidationError, RequestQue
 {{#imports}}
 // prettier-ignore
 // @ts-ignore
-import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, is{{classname}}Array, getValidationErrors{{classname}}, getValidationErrors{{classname}}Array } from '../model/models';
+import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, is{{classname}}Array, getValidationErrors{{classname}}, getValidationErrors{{classname}}Array } from '../{{import}}';
 {{/imports}}
 
 import { ApiConfig } from '../../api-config';
@@ -31,6 +31,8 @@ import {
     {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams{{/allParams.0}}{{/operation}}{{/operations}}{{/useSingleRequestParameter}}
 } from './{{classFilename}}Interface';
 {{/withInterfaces}}
+
+import { {{#operations}}{{#operation}}{{nickname}}Url{{#hasMore}}, {{/hasMore}}{{/operation}}{{/operations}} } from './{{baseNameKebabCase}}.url';
 
 {{#operations}}
 
@@ -49,13 +51,6 @@ export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterIn
 {{/operation}}
 {{/useSingleRequestParameter}}
 {{/withInterfaces}}
-
-{{#operation}}
-export function {{nickname}}Url({{#pathParams}}{{paramName}}: {{dataType}} | '*'{{#hasMore}}, {{/hasMore}}{{/pathParams}}) {
-    return {{#hasPathParams}}`{{{path}}}`{{/hasPathParams}}{{^hasPathParams}}'{{{path}}}'{{/hasPathParams}};
-}
-
-{{/operation}}
 
 {{#description}}
 /**
