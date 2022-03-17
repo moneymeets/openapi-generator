@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Generate Securities API" type="Application" factoryName="Application">
-    <option name="ALTERNATIVE_JRE_PATH" value="openjdk-16" />
+    <option name="ALTERNATIVE_JRE_PATH" value="openjdk-17" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.openapitools.codegen.OpenAPIGenerator" />
     <module name="openapi-generator-cli" />
