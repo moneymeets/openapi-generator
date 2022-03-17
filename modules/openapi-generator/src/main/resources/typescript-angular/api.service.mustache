@@ -4,8 +4,10 @@
 import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
 import { CustomHttpParameterCodec } from '../encoder';
-import { of, throwError } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+// prettier-ignore
+// @ts-ignore
+import { throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 // prettier-ignore
 // @ts-ignore
@@ -175,7 +177,7 @@ export class {{classname}} {
         getValidationErrors{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isEnum}}{{#isString}}string{{/isString}}{{^isString}}number{{/isString}}{{/isEnum}}({{paramName}}, { required: {{required}}{{#isPrimitiveType}}{{^isString}}{{^isBoolean}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isBoolean}}{{/isString}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, {{^isBodyParam}}false{{/isBodyParam}}{{#isBodyParam}}{{^isRestfulPartialUpdate}}false{{/isRestfulPartialUpdate}}{{#isRestfulPartialUpdate}}true{{/isRestfulPartialUpdate}}{{/isBodyParam}}{{/isPrimitiveType}});
         {{/isListContainer}}
         if ({{paramName}}ValidationErrors) {
-          return throwError(new {{#isQueryParam}}RequestQueryParameterValidationError{{/isQueryParam}}{{#isBodyParam}}RequestBodyValidationError{{/isBodyParam}}{{^isQueryParam}}{{^isBodyParam}}RequestParameterValidationError{{/isBodyParam}}{{/isQueryParam}}('{{classname}}.{{nickname}}', '{{paramName}}', {{paramName}}, {{paramName}}ValidationErrors));
+          return throwError(() => new {{#isQueryParam}}RequestQueryParameterValidationError{{/isQueryParam}}{{#isBodyParam}}RequestBodyValidationError{{/isBodyParam}}{{^isQueryParam}}{{^isBodyParam}}RequestParameterValidationError{{/isBodyParam}}{{/isQueryParam}}('{{classname}}.{{nickname}}', '{{paramName}}', {{paramName}}, {{paramName}}ValidationErrors));
         }
 {{/allParams}}
 
@@ -303,31 +305,30 @@ export class {{classname}} {
                 observe: 'response'
             }
         ).pipe(
-            mergeMap(response => {
+            map(response => {
                 const responseBody = response.body;
                 switch (response.status) {
                 {{#responses}}
                     {{^is4xx}}{{^is5xx}}
                     case {{code}}:
                     {{#dataType}}
-                        return {{#isListContainer}}is{{{baseType}}}Array(responseBody, { required: true, uniqueItems: {{uniqueItems}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}is{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }){{/isListContainer}}
-                            ? of(responseBody)
-                            : throwError(
-                                new ResponseBodyValidationError(
-                                  '{{classname}}.{{nickname}}',
-                                  '{{#isListContainer}}Array<{{{baseType}}}>{{/isListContainer}}{{^isListContainer}}{{{dataType}}}{{/isListContainer}}',
-                                  responseBody,
-                                  {{#isListContainer}}getValidationErrors{{{baseType}}}Array(responseBody, { required: true, uniqueItems: {{uniqueItems}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, false{{/isPrimitiveType}}){{/isListContainer}}
-                                )
-                              );
+                        if (!{{#isListContainer}}is{{{baseType}}}Array(responseBody, { required: true, uniqueItems: {{uniqueItems}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}is{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }){{/isListContainer}}) {
+                            throw new ResponseBodyValidationError(
+                                '{{classname}}.{{nickname}}',
+                                '{{#isListContainer}}Array<{{{baseType}}}>{{/isListContainer}}{{^isListContainer}}{{{dataType}}}{{/isListContainer}}',
+                                responseBody,
+                                {{#isListContainer}}getValidationErrors{{{baseType}}}Array(responseBody, { required: true, uniqueItems: {{uniqueItems}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, false{{/isPrimitiveType}}){{/isListContainer}}
+                            );
+                        }
+                        return responseBody;
                     {{/dataType}}
                     {{^dataType}}
-                        return of(responseBody);
+                        return responseBody;
                     {{/dataType}}
                     {{/is5xx}}{{/is4xx}}
                 {{/responses}}
                 }
-                return throwError(new ResponseHttpStatusError('{{classname}}.{{nickname}}', response.status));
+                throw new ResponseHttpStatusError('{{classname}}.{{nickname}}', response.status);
             })
         );
     }
