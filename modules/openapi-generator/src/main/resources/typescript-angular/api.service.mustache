@@ -189,7 +189,7 @@ export class {{classname}} {
         {{#isCollectionFormatMulti}}
             {{paramName}}.forEach((element) => {
                 queryParameters = this.addToHttpParams(queryParameters,
-                  <any>element, '{{baseName}}');
+                  element as any, '{{baseName}}');
             })
         {{/isCollectionFormatMulti}}
         {{^isCollectionFormatMulti}}
@@ -201,7 +201,7 @@ export class {{classname}} {
         {{^isListContainer}}
         if ({{paramName}} !== undefined && {{paramName}} !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>{{paramName}}, '{{baseName}}');
+            {{paramName}} as any, '{{baseName}}');
         }
         {{/isListContainer}}
 {{/queryParams}}
