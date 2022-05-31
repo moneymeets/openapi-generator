@@ -1,11 +1,25 @@
-FROM jimschubert/8-jdk-alpine-mvn:1.0
-
-RUN set -x && \
-    apk add --no-cache bash
+FROM openjdk:8-jdk-alpine
 
 ENV GEN_DIR /opt/openapi-generator
 WORKDIR ${GEN_DIR}
 VOLUME  ${MAVEN_HOME}/.m2/repository
+
+ENV MAVEN_HOME=/usr/share/maven
+
+RUN apk --no-cache add ca-certificates openssl &&  update-ca-certificates
+
+RUN cd /tmp \
+   && wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz \
+   && wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz.sha1 \
+   && echo -e "$(cat apache-maven-3.3.9-bin.tar.gz.sha1)  apache-maven-3.3.9-bin.tar.gz" | sha1sum -c - \
+   && tar zxf apache-maven-3.3.9-bin.tar.gz \
+   && rm -rf apache-maven-3.3.9-bin.tar.gz \
+   && rm -rf *.sha1 \
+   && mv ./apache-maven-3.3.9 /usr/share/maven \
+   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+
+RUN set -x && \
+    apk add --no-cache bash
 
 # Required from a licensing standpoint
 COPY ./LICENSE ${GEN_DIR}
