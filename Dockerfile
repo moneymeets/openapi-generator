@@ -1,10 +1,10 @@
 FROM openjdk:8-jdk-alpine
 
+ENV MAVEN_HOME=/usr/share/maven
+
 ENV GEN_DIR /opt/openapi-generator
 WORKDIR ${GEN_DIR}
 VOLUME  ${MAVEN_HOME}/.m2/repository
-
-ENV MAVEN_HOME=/usr/share/maven
 
 RUN apk --no-cache add ca-certificates openssl &&  update-ca-certificates
 
