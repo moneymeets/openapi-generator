@@ -7,7 +7,6 @@ import { {{classname}}, ModelFields{{classname}}, modelFields{{classname}} } fro
 // @ts-ignore
 import { ModelFieldArray, ModelFieldboolean, ModelFieldnumber, ModelFieldObject, ModelFields, ModelFieldstring, removeAdditionalProperties } from '../../model-field';
 
-{{^vars}}/* eslint-disable @typescript-eslint/no-empty-interface */{{/vars}}
 export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.}}}{{^-last}}, {{/-last}}{{/allParents}} { {{>modelGenericAdditionalProperties}}
 {{#vars}}
     {{#description}}
