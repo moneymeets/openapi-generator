@@ -12,11 +12,6 @@ import { is{{classname}}, {{classname}}, removeAdditionalPropertiesFrom{{classna
 {{/tsImports}}
 import { FieldValidationError } from '../../validation-errors';
 
-/**
- * @type {{classname}}{{#description}}
- * {{{description}}}{{/description}}
- * @export
- */
 export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};
 
 export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}) {
