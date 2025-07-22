@@ -105,7 +105,7 @@ export class Configuration {
      *   APPLICATION/JSON
      *   application/vnd.company+json
      * @param mime - MIME (Multipurpose Internet Mail Extensions)
-     * @return True if the given MIME is JSON, false otherwise.
+     * @returns True if the given MIME is JSON, false otherwise.
      */
     public isJsonMime(mime: string): boolean {
         const jsonMime = new RegExp(/^(application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(;.*)?$/, 'i');
