@@ -12,11 +12,6 @@ import { is{{classname}}, {{classname}}, removeAdditionalPropertiesFrom{{classna
 {{/tsImports}}
 import { FieldValidationError } from '../../validation-errors';
 
-/**
- * @type {{classname}}{{#description}}
- * {{{description}}}{{/description}}
- * @export
- */
 export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};
 
 export function removeAdditionalPropertiesFrom{{classname}}(obj: {{classname}}) {
@@ -32,7 +27,7 @@ export function is{{classname}}(obj: any, constraints: ObjectConstraints): obj i
     return !getValidationErrors{{classname}}(obj, constraints, false);
 }
 
-export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is Array<{{classname}}> {
+export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is {{classname}}[] {
     return !getValidationErrors{{classname}}Array(x, constraints);
 }
 
@@ -60,7 +55,7 @@ export function getValidationErrors{{classname}}Array(obj: any, constraints: Arr
         ? null
         : {
               fieldName: '{{classname}}',
-              expectedType: 'Array<{{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}}>',
+              expectedType: '({{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}})[]',
               actualValue: obj,
               errors: groupedErrors as FieldValidationError[]
         };

@@ -31,7 +31,7 @@ export function is{{classname}}(obj: any, constraints: ObjectConstraints): obj i
     return !getValidationErrors{{classname}}(obj, constraints, false);
 }
 
-export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is Array<{{classname}}> {
+export function is{{classname}}Array(x: any, constraints: ArrayConstraints): x is {{classname}}[] {
     return !getValidationErrors{{classname}}Array(x, constraints);
 }
 

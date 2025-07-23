@@ -1,7 +1,6 @@
 {{>licenseInfo}}
-/* eslint-disable @typescript-eslint/no-magic-numbers, @typescript-eslint/no-unused-vars, @typescript-eslint/member-ordering */
 
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
 import { CustomHttpParameterCodec } from '../encoder';
 // prettier-ignore
@@ -78,67 +77,17 @@ export class {{classname}} {
     public configuration = new Configuration();
     public encoder: HttpParameterCodec;
 
-    constructor(protected httpClient: HttpClient, @Optional() configuration: Configuration) {
+    protected httpClient = inject(HttpClient);
+
+    constructor() {
+        const configuration = inject(Configuration, { optional: true });
         if (configuration) {
             this.configuration = configuration;
         }
         if (typeof this.configuration.basePath !== 'string') {
             this.configuration.basePath = ApiConfig.apiUrls?.{{apiName}};
         }
-        this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-    }
-
-{{#hasSomeFormParams}}
-    /**
-     * @param consumes string[] mime-types
-     * @return true: consumes contains 'multipart/form-data', false: otherwise
-     */
-    private canConsumeForm(consumes: string[]): boolean {
-        const form = 'multipart/form-data';
-        for (const consume of consumes) {
-            if (form === consume) {
-                return true;
-            }
-        }
-        return false;
-    }
-{{/hasSomeFormParams}}
-
-    // @ts-ignore
-    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
-        if (typeof value === "object" && value instanceof Date === false) {
-            httpParams = this.addToHttpParamsRecursive(httpParams, value);
-        } else {
-            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-        }
-        return httpParams;
-    }
-
-    private addToHttpParamsRecursive(httpParams: HttpParams, value?: any, key?: string): HttpParams {
-        if (value === null || value === undefined) {
-            return httpParams;
-        }
-
-        if (typeof value === "object") {
-            {{#isQueryParamObjectFormatJson}}
-            httpParams = httpParams.append(key, JSON.stringify(value));
-            {{/isQueryParamObjectFormatJson}}
-            {{^isQueryParamObjectFormatJson}}
-            if (Array.isArray(value)) {
-                (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-            } else if (value instanceof Date) {
-                throw Error("Not implemented! Please use iso date strings instead of Date objects for api calls.");
-            } else {
-                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
-                    httpParams, value[k], key ? `${key}{{#isQueryParamObjectFormatDot}}.{{/isQueryParamObjectFormatDot}}{{#isQueryParamObjectFormatKey}}[{{/isQueryParamObjectFormatKey}}${k}{{#isQueryParamObjectFormatKey}}]{{/isQueryParamObjectFormatKey}}` : k));
-            }
-            {{/isQueryParamObjectFormatJson}}
-        } else if (key) {
-            httpParams = httpParams.append(key, value);
-        } else {
-            throw Error("key may not be null if value is not object or array");
-        }
-        return httpParams;
+        this.encoder = this.configuration.encoder ?? new CustomHttpParameterCodec();
     }
 
 {{#operation}}
@@ -315,7 +264,7 @@ export class {{classname}} {
                         if (!{{#isListContainer}}is{{{baseType}}}Array(responseBody, { required: true, uniqueItems: {{uniqueItems}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}is{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }){{/isListContainer}}) {
                             throw new ResponseBodyValidationError(
                                 '{{classname}}.{{nickname}}',
-                                '{{#isListContainer}}Array<{{{baseType}}}>{{/isListContainer}}{{^isListContainer}}{{{dataType}}}{{/isListContainer}}',
+                                '{{#isListContainer}}{{{baseType}}}[]{{/isListContainer}}{{^isListContainer}}{{{dataType}}}{{/isListContainer}}',
                                 responseBody,
                                 {{#isListContainer}}getValidationErrors{{{baseType}}}Array(responseBody, { required: true, uniqueItems: {{uniqueItems}}{{#minItems}}, minItems: {{minItems}}{{/minItems}}{{#maxItems}}, maxItems: {{maxItems}}{{/maxItems}} }{{#items}}{{#isPrimitiveType}}, { required: {{required}}{{#isNumeric}}, integer: {{isInteger}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}} }{{/isPrimitiveType}}{{/items}}){{/isListContainer}}{{^isListContainer}}getValidationErrors{{{dataType}}}(responseBody, { required: true{{#isPrimitiveType}}{{#isNumeric}}{{#minimum}}, minimum: {{minimum}}{{/minimum}}{{#maximum}}, maximum: {{maximum}}{{/maximum}}{{/isNumeric}}{{#isString}}{{#pattern}}, pattern: {{pattern}}{{/pattern}}{{#minLength}}, minLength: {{minLength}}{{/minLength}}{{#maxLength}}, maxLength: {{maxLength}}{{/maxLength}}{{/isString}}{{#dataFormat}}, format: '{{dataFormat}}'{{/dataFormat}}{{/isPrimitiveType}} }{{^isPrimitiveType}}, false{{/isPrimitiveType}}){{/isListContainer}}
                             );
@@ -333,5 +282,59 @@ export class {{classname}} {
         );
     }
 
-{{/operation}}}
+{{/operation}}
+
+{{#hasSomeFormParams}}
+    /**
+     * @param consumes string[] mime-types
+     * @returns true: consumes contains 'multipart/form-data', false: otherwise
+     */
+    private canConsumeForm(consumes: string[]): boolean {
+        const form = 'multipart/form-data';
+        for (const consume of consumes) {
+            if (form === consume) {
+                return true;
+            }
+        }
+        return false;
+    }
+{{/hasSomeFormParams}}
+
+    // @ts-ignore
+    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object" && value instanceof Date === false) {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value);
+        } else {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+        }
+        return httpParams;
+    }
+
+    private addToHttpParamsRecursive(httpParams: HttpParams, value?: any, key?: string): HttpParams {
+        if (value === null || value === undefined) {
+            return httpParams;
+        }
+
+        if (typeof value === "object") {
+            {{#isQueryParamObjectFormatJson}}
+            httpParams = httpParams.append(key, JSON.stringify(value));
+            {{/isQueryParamObjectFormatJson}}
+            {{^isQueryParamObjectFormatJson}}
+            if (Array.isArray(value)) {
+                value.forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+            } else if (value instanceof Date) {
+                throw Error("Not implemented! Please use iso date strings instead of Date objects for api calls.");
+            } else {
+                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
+                    httpParams, value[k], key ? `${key}{{#isQueryParamObjectFormatDot}}.{{/isQueryParamObjectFormatDot}}{{#isQueryParamObjectFormatKey}}[{{/isQueryParamObjectFormatKey}}${k}{{#isQueryParamObjectFormatKey}}]{{/isQueryParamObjectFormatKey}}` : k));
+            }
+            {{/isQueryParamObjectFormatJson}}
+        } else if (key) {
+            httpParams = httpParams.append(key, value);
+        } else {
+            throw Error("key may not be null if value is not object or array");
+        }
+        return httpParams;
+    }
+}
 {{/operations}}
