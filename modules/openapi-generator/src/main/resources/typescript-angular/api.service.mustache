@@ -3,24 +3,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
 import { CustomHttpParameterCodec } from '../encoder';
-// prettier-ignore
-// @ts-ignore
 import { throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-// prettier-ignore
-// @ts-ignore
 import { isnumber, isstring, isboolean, getValidationErrorsnumber, getValidationErrorsstring, getValidationErrorsboolean } from '../../primitive-types-checks';
-// prettier-ignore
-// @ts-ignore
 import { getValidationErrorsnumberArray, getValidationErrorsstringArray, getValidationErrorsbooleanArray } from '../../model-field';
-// prettier-ignore
-// @ts-ignore
 import { RequestBodyValidationError, RequestParameterValidationError, RequestQueryParameterValidationError, ResponseBodyValidationError, ResponseHttpStatusError } from '../../validation-errors';
 
 {{#imports}}
-// prettier-ignore
-// @ts-ignore
 import { {{classname}}, removeAdditionalPropertiesFrom{{classname}}, removeAdditionalPropertiesFromPartial{{classname}}, is{{classname}}, is{{classname}}Array, getValidationErrors{{classname}}, getValidationErrors{{classname}}Array } from '../{{import}}';
 {{/imports}}
 
