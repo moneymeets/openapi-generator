@@ -1,10 +1,6 @@
 {{#tsImports}}
-// prettier-ignore
-// @ts-ignore
 import { {{classname}}, ModelFields{{classname}}, modelFields{{classname}} } from '{{filename}}';
 {{/tsImports}}
-// prettier-ignore
-// @ts-ignore
 import { ModelFieldArray, ModelFieldboolean, ModelFieldnumber, ModelFieldObject, ModelFields, ModelFieldstring, removeAdditionalProperties } from '../../model-field';
 
 export interface {{classname}}{{#allParents}}{{#-first}} extends {{/-first}}{{{.}}}{{^-last}}, {{/-last}}{{/allParents}} { {{>modelGenericAdditionalProperties}}
